@@ -3,6 +3,8 @@ export default function SessionWrapper({ children }: any) {
     return (
         <SessionProvider >
             {children}
+
         </SessionProvider>
+
     );
 }
