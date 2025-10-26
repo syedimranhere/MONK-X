@@ -13,12 +13,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model users {
   id        Int      @id @unique @default(autoincrement())
-  username  String   @unique
-  fullname  String?
+  username  String?  @unique
+  fullname  String
   email     String   @unique
-  password  String
+  password  String?
+  provider  String?
+  pfp       String?
   // when user joined us
   createdAt DateTime @default(now())
 }
