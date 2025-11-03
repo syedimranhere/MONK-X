@@ -40,7 +40,7 @@ export default function SignInPage() {
                 email: emailRef.current.value,
                 password: passwordRef.current.value
             })
-            router.push("/home");
+            router.push("/home"); 2
 
         } catch (error) {
             console.log(error.message)

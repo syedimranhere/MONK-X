@@ -79,6 +79,7 @@ export const authpOptions = {
 
 
 
+
             return true;
         },
         async redirect({ url, baseUrl }) {
@@ -86,7 +87,6 @@ export const authpOptions = {
         },
         async jwt({ token, user }) {
             if (user) {
-                token.id = user.id
                 token.name = user.fullname
                 token.email = user.email
                 return token
@@ -94,10 +94,7 @@ export const authpOptions = {
             return token
         },
         async session({ session, token, user }) {
-            console.log(session, "this is session")
 
-
-            session.token = token
             return session;
         },
     },

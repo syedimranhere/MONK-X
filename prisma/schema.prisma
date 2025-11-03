@@ -21,6 +21,21 @@ model users {
   password  String?
   provider  String?
   pfp       String?
+  posts     post[]
   // when user joined us
   createdAt DateTime @default(now())
 }
+
+
+model post {
+  id        Int      @id @unique @default(autoincrement())
+  userId    Int?
+  content   String?
+  title     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  published Boolean  @default(false)
+  // the first one is the foreign key
+  user      users?   @relation(fields: [userId], references: [id])
+}
+

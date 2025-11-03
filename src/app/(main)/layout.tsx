@@ -2,7 +2,7 @@
 import { getServerSession } from "next-auth"
 import { redirect } from "next/navigation"
 import { authpOptions } from "../api/auth/[...nextauth]/route"
-
+import Sidebar from "../components/rightsidebar/sidebar"
 export default async function layout({ children }: any) {
     const session = await getServerSession(authpOptions)
     if (!session?.user) {
@@ -11,7 +11,10 @@ export default async function layout({ children }: any) {
 
     return (
         <>
-            <h2 className="bg-black text-purple-900 gap-2">this is the top thing</h2>
+            <Sidebar />
+
+
+
             {children}
         </>
     )

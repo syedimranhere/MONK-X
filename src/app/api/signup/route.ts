@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
 
     try {
         console.log("reached here")
+
         const { email, password, fullname, username } = await req.json();
         console.log(email, "HERE ")
         const exists = await prisma.users.findFirst({
