@@ -1,35 +1,43 @@
 "use client"
 import { useSession } from "next-auth/react"
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import axios from "axios"
 export default function Home() {
     const { data: session } = useSession()
-    const [loading, setloading] = useState(Boolean)
-    const [image, setimage] = useState()
+    const [loading, setloading] = useState(false)
+    const [filename, setfilename] = useState("")
+    const image = useRef<HTMLInputElement>(null)
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault()
-        setimage(e.target.files[0])
 
-    }
+    const [message, setmessage] = useState<string>(null)
+
+
     const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setloading(true)
-        const url = URL.createObjectURL(image!)
-        console.log(url)
+        setmessage(null)
+
         try {
-            //getting presigned url
+            const file = image.current?.files?.[0];
+
             const response1 = await axios.post("/api/s3", {
-                filename: image?.name
+                filename: file.name
             })
-            console.log(response1)
+
+
             // now we have a url so upload to s3
             const aws_url = response1.data.url
-            const response2 = await axios.put(aws_url, {
-                image
 
-            })
-            console.log(response2)
+
+            const response2 = await axios.put(aws_url,
+                file
+                , {
+                    headers: {
+                        "Content-Type": image // must match the presigned URL
+                    }
+                })
+            setmessage("Uploaded")
+            setfilename("")
 
         } catch (error) {
             console.log(error)
@@ -43,19 +51,19 @@ export default function Home() {
         <div className="min-h-screen bg-black text-white ">
             <div className="flex flex-col">
                 <p>Signed in as :</p>
+                {/* @ts-ignore */}
                 <p className="mb-4">{session?.user.fullname!} {session?.user.email!}</p>
                 {/* <p>{session?.user}</p> */}
 
-                <img src={session?.user?.image} alt="profile" className="w-10 h-13 rounded-lg" />
                 <form
                     onSubmit={handleUpload}
                     className="flex flex-col items-center gap-4 p-6 border border-gray-300 rounded-lg shadow-md w-full max-w-sm bg-white"
                 >
                     <label className="w-full flex flex-col items-center px-4 py-6 bg-blue-50 rounded-lg border-2 border-dashed border-blue-300 cursor-pointer hover:bg-blue-100 transition">
-                        <span className="text-blue-600 font-medium">{image ? image.name : "Choose an image"}</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+                        <span className="text-blue-600 font-medium">{"Choose an image"}</span>
+                        <input type="file" onChange={() => setfilename(image.current?.files[0].name)} ref={image} accept="image/*" className="hidden" />
+                        <span className="text-red-700">{filename || "Choose file"}</span>
                     </label>
-
 
                     <button
                         type="submit"
@@ -65,6 +73,8 @@ export default function Home() {
                         {loading ? "Uploading..." : "Upload"}
                     </button>
                 </form>
+                {message}
+
 
             </div>
 
